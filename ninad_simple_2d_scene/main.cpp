@@ -42,7 +42,7 @@ TEXTURE_BORDER = 0; // this value MUST be zero
 constexpr char LIGHT_SPRITE_FILEPATH[] = "light.png",
 MISA_SPRITE_FILEPATH[] = "misa.png";
 
-constexpr glm::vec3 INIT_SCALE = glm::vec3(5.0f, 5.98f, 0.0f),
+constexpr glm::vec3 INIT_SCALE = glm::vec3(2.0f, 2.392f, 0.0f),
 INIT_POS_LIGHT = glm::vec3(2.0f, 0.0f, 0.0f),
 INIT_POS_MISA = glm::vec3(-2.0f, 0.0f, 0.0f);
 
@@ -167,17 +167,20 @@ void update()
     g_rotation_light.y += ROT_INCREMENT * delta_time;
     g_rotation_misa.y += -1 * ROT_INCREMENT * delta_time;
 
-    /* Model matrix reset */
+    /* Light model matrix reset */
     g_light_matrix = glm::mat4(1.0f);
-    g_misa_matrix = glm::mat4(1.0f);
 
-    /* Transformations */
+    /* Light transformations */
     g_light_matrix = glm::translate(g_light_matrix, INIT_POS_LIGHT);
     g_light_matrix = glm::rotate(g_light_matrix,
         g_rotation_light.y,
         glm::vec3(0.0f, 1.0f, 0.0f));
     g_light_matrix = glm::scale(g_light_matrix, INIT_SCALE);
 
+    /* Misa model matrix reset */
+    g_misa_matrix = glm::mat4(1.0);
+
+    /* Misa transformations */
     g_misa_matrix = glm::translate(g_misa_matrix, INIT_POS_MISA);
     g_misa_matrix = glm::rotate(g_misa_matrix,
         g_rotation_misa.y,
