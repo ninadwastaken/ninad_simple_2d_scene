@@ -159,6 +159,9 @@ glm::vec3 light_translation = glm::vec3(0.0f, 0.0f, 0.0f);
 glm::vec3 misa_translation = glm::vec3(0.0f, 0.0f, 0.0f);
 float rotation_radius = 2;
 float rotation_speed = 7;
+glm::vec3 light_scale = glm::vec3(1.0f, 1.0f, 1.0f);
+float light_initial_size = 1.5;
+float light_scale_amplitude = 0.5;
 
 void update()
 {
@@ -178,6 +181,12 @@ void update()
         ticks,
         glm::vec3(0.0f, 1.0f, 0.0f));
 
+    /* light changes size */
+    light_scale.x = light_initial_size + light_scale_amplitude * glm::sin(ticks);
+    light_scale.y = light_initial_size + light_scale_amplitude * glm::sin(ticks);
+    g_light_matrix = glm::scale(g_light_matrix, 
+        light_scale);
+
 
     /* misa rotates around light */
 
@@ -185,6 +194,7 @@ void update()
     misa_translation.y = light_translation.y + rotation_radius * glm::cos(rotation_speed * ticks);
 
     g_misa_matrix = glm::translate(g_misa_matrix, misa_translation);
+
 
 
 
