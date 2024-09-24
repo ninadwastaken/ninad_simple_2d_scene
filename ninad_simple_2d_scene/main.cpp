@@ -34,17 +34,12 @@ F_SHADER_PATH[] = "shaders/fragment_textured.glsl";
 
 constexpr float MILLISECONDS_IN_SECOND = 1000.0;
 
-constexpr GLint NUMBER_OF_TEXTURES = 1, // to be generated, that is
-LEVEL_OF_DETAIL = 0, // mipmap reduction image level
-TEXTURE_BORDER = 0; // this value MUST be zero
+constexpr GLint NUMBER_OF_TEXTURES = 1,
+LEVEL_OF_DETAIL = 0, 
+TEXTURE_BORDER = 0; 
 
-// source: https://lightnoiro.jp/
 constexpr char LIGHT_SPRITE_FILEPATH[] = "light.png",
 MISA_SPRITE_FILEPATH[] = "misa.png";
-
-constexpr glm::vec3 INIT_SCALE = glm::vec3(2.0f, 2.392f, 0.0f),
-INIT_POS_LIGHT = glm::vec3(0.0f, 0.0f, 0.0f),
-INIT_POS_MISA = glm::vec3(-2.0f, 0.0f, 0.0f);
 
 constexpr float ROT_INCREMENT = 1.0f;
 
@@ -59,11 +54,21 @@ g_projection_matrix;
 
 float g_previous_ticks = 0.0f;
 
-glm::vec3 g_rotation_light = glm::vec3(0.0f, 0.0f, 0.0f),
-g_rotation_misa = glm::vec3(0.0f, 0.0f, 0.0f);
 
 GLuint g_light_texture_id,
 g_misa_texture_id;
+
+
+glm::vec3 light_translation = glm::vec3(0.0f, 0.0f, 0.0f);
+glm::vec3 misa_translation = glm::vec3(0.0f, 0.0f, 0.0f);
+
+float rotation_radius = 2;
+float rotation_speed = 3;
+
+glm::vec3 light_scale = glm::vec3(1.0f, 1.0f, 1.0f);
+float light_initial_size = 1.5;
+float light_scale_amplitude = 0.5;
+float light_translation_amplitude = 1;
 
 
 GLuint load_texture(const char* filepath)
@@ -155,14 +160,7 @@ void process_input()
     }
 }
 
-glm::vec3 light_translation = glm::vec3(0.0f, 0.0f, 0.0f);
-glm::vec3 misa_translation = glm::vec3(0.0f, 0.0f, 0.0f);
-float rotation_radius = 2;
-float rotation_speed = 3;
-glm::vec3 light_scale = glm::vec3(1.0f, 1.0f, 1.0f);
-float light_initial_size = 1.5;
-float light_scale_amplitude = 0.5;
-float light_translation_amplitude = 1;
+
 
 void update()
 {
@@ -202,31 +200,6 @@ void update()
 
 
 
-
-    /* Game logic *//*
-    g_rotation_light.y += ROT_INCREMENT * delta_time;
-    g_rotation_misa.y += -1 * ROT_INCREMENT * delta_time;*/
-
-    ///* Light model matrix reset */
-    //g_light_matrix = glm::mat4(1.0f);
-
-    ///* Light transformations */
-    //g_light_matrix = glm::translate(g_light_matrix, INIT_POS_LIGHT);
-    /*g_light_matrix = glm::rotate(g_light_matrix,
-        g_rotation_light.y,
-        glm::vec3(0.0f, 1.0f, 0.0f));*/
-    //g_light_matrix = glm::scale(g_light_matrix, INIT_SCALE);
-
-    ///* Misa model matrix reset */
-    //g_misa_matrix = glm::mat4(1.0f);
-
-    ///* Misa transformations */
-    //g_misa_matrix = glm::translate(g_light_matrix, INIT_POS_MISA);
-    //g_misa_matrix = glm::rotate(g_misa_matrix,
-    //    g_rotation_misa.y,
-    //    glm::vec3(0.0f, 1.0f, 0.0f));
-    //g_misa_matrix = glm::scale(g_misa_matrix, INIT_SCALE);
-
 }
 
 
@@ -234,7 +207,7 @@ void draw_object(glm::mat4& object_g_model_matrix, GLuint& object_texture_id)
 {
     g_shader_program.set_model_matrix(object_g_model_matrix);
     glBindTexture(GL_TEXTURE_2D, object_texture_id);
-    glDrawArrays(GL_TRIANGLES, 0, 6); // we are now drawing 2 triangles, so use 6, not 3
+    glDrawArrays(GL_TRIANGLES, 0, 6); 
 }
 
 
@@ -242,18 +215,16 @@ void render()
 {
     glClear(GL_COLOR_BUFFER_BIT);
 
-    // Vertices
     float vertices[] =
     {
-        -0.5f, -0.5f, 0.5f, -0.5f, 0.5f, 0.5f,  // triangle 1
-        -0.5f, -0.5f, 0.5f, 0.5f, -0.5f, 0.5f   // triangle 2
+        -0.5f, -0.5f, 0.5f, -0.5f, 0.5f, 0.5f,  
+        -0.5f, -0.5f, 0.5f, 0.5f, -0.5f, 0.5f   
     };
 
-    // Textures
     float texture_coordinates[] =
     {
-        0.0f, 1.0f, 1.0f, 1.0f, 1.0f, 0.0f,     // triangle 1
-        0.0f, 1.0f, 1.0f, 0.0f, 0.0f, 0.0f,     // triangle 2
+        0.0f, 1.0f, 1.0f, 1.0f, 1.0f, 0.0f,     
+        0.0f, 1.0f, 1.0f, 0.0f, 0.0f, 0.0f,     
     };
 
     glVertexAttribPointer(g_shader_program.get_position_attribute(), 2, GL_FLOAT, false,
@@ -264,11 +235,9 @@ void render()
         false, 0, texture_coordinates);
     glEnableVertexAttribArray(g_shader_program.get_tex_coordinate_attribute());
 
-    // Bind texture
     draw_object(g_light_matrix, g_light_texture_id);
     draw_object(g_misa_matrix, g_misa_texture_id);
 
-    // We disable two attribute arrays now
     glDisableVertexAttribArray(g_shader_program.get_position_attribute());
     glDisableVertexAttribArray(g_shader_program.get_tex_coordinate_attribute());
 
