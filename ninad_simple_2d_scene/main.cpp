@@ -43,7 +43,7 @@ constexpr char LIGHT_SPRITE_FILEPATH[] = "light.png",
 MISA_SPRITE_FILEPATH[] = "misa.png";
 
 constexpr glm::vec3 INIT_SCALE = glm::vec3(2.0f, 2.392f, 0.0f),
-INIT_POS_LIGHT = glm::vec3(2.0f, 0.0f, 0.0f),
+INIT_POS_LIGHT = glm::vec3(0.0f, 0.0f, 0.0f),
 INIT_POS_MISA = glm::vec3(-2.0f, 0.0f, 0.0f);
 
 constexpr float ROT_INCREMENT = 1.0f;
@@ -155,6 +155,8 @@ void process_input()
     }
 }
 
+glm::vec3 light_translation = glm::vec3(0.0f, 0.0f, 0.0f);
+glm::vec3 misa_translation = glm::vec3(0.0f, 0.0f, 0.0f);
 
 void update()
 {
@@ -163,31 +165,45 @@ void update()
     float delta_time = ticks - g_previous_ticks;
     g_previous_ticks = ticks; 
 
-    /* Game logic */
-    g_rotation_light.y += ROT_INCREMENT * delta_time;
-    g_rotation_misa.y += -1 * ROT_INCREMENT * delta_time;
+    
 
-    /* Light model matrix reset */
+    g_misa_matrix = glm::mat4(1.0f);
     g_light_matrix = glm::mat4(1.0f);
 
-    /* Light transformations */
-    g_light_matrix = glm::translate(g_light_matrix, INIT_POS_LIGHT);
-    g_light_matrix = glm::rotate(g_light_matrix,
+    /* misa rotates around light */
+
+    misa_translation = glm::vec3(light_translation.x + glm::sin(ticks),
+        light_translation.y + glm::cos(ticks),
+        0.0f);
+
+    g_misa_matrix = glm::translate(g_misa_matrix, misa_translation);
+
+
+
+    /* Game logic *//*
+    g_rotation_light.y += ROT_INCREMENT * delta_time;
+    g_rotation_misa.y += -1 * ROT_INCREMENT * delta_time;*/
+
+    ///* Light model matrix reset */
+    //g_light_matrix = glm::mat4(1.0f);
+
+    ///* Light transformations */
+    //g_light_matrix = glm::translate(g_light_matrix, INIT_POS_LIGHT);
+    /*g_light_matrix = glm::rotate(g_light_matrix,
         g_rotation_light.y,
-        glm::vec3(0.0f, 1.0f, 0.0f));
-    g_light_matrix = glm::scale(g_light_matrix, INIT_SCALE);
+        glm::vec3(0.0f, 1.0f, 0.0f));*/
+    //g_light_matrix = glm::scale(g_light_matrix, INIT_SCALE);
 
-    /* Misa model matrix reset */
-    g_misa_matrix = glm::mat4(1.0);
+    ///* Misa model matrix reset */
+    //g_misa_matrix = glm::mat4(1.0f);
 
-    /* Misa transformations */
-    g_misa_matrix = glm::translate(g_misa_matrix, INIT_POS_MISA);
-    g_misa_matrix = glm::rotate(g_misa_matrix,
-        g_rotation_misa.y,
-        glm::vec3(0.0f, 1.0f, 0.0f));
-    g_misa_matrix = glm::scale(g_misa_matrix, INIT_SCALE);
+    ///* Misa transformations */
+    //g_misa_matrix = glm::translate(g_light_matrix, INIT_POS_MISA);
+    //g_misa_matrix = glm::rotate(g_misa_matrix,
+    //    g_rotation_misa.y,
+    //    glm::vec3(0.0f, 1.0f, 0.0f));
+    //g_misa_matrix = glm::scale(g_misa_matrix, INIT_SCALE);
 
-    //g_light_matrix = glm::translate(g_light_matrix, glm::vec3(0.001f, 0.0f, 0.0f));
 }
 
 
