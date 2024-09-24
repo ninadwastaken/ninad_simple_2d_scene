@@ -38,13 +38,13 @@ constexpr GLint NUMBER_OF_TEXTURES = 1, // to be generated, that is
 LEVEL_OF_DETAIL = 0, // mipmap reduction image level
 TEXTURE_BORDER = 0; // this value MUST be zero
 
-// source: https://kiminoiro.jp/
-constexpr char KIMI_SPRITE_FILEPATH[] = "kimi.png",
-TOTSUKO_SPRITE_FILEPATH[] = "totsuko.png";
+// source: https://lightnoiro.jp/
+constexpr char LIGHT_SPRITE_FILEPATH[] = "light.png",
+MISA_SPRITE_FILEPATH[] = "misa.png";
 
 constexpr glm::vec3 INIT_SCALE = glm::vec3(5.0f, 5.98f, 0.0f),
-INIT_POS_KIMI = glm::vec3(2.0f, 0.0f, 0.0f),
-INIT_POS_TOTSUKO = glm::vec3(-2.0f, 0.0f, 0.0f);
+INIT_POS_LIGHT = glm::vec3(2.0f, 0.0f, 0.0f),
+INIT_POS_MISA = glm::vec3(-2.0f, 0.0f, 0.0f);
 
 constexpr float ROT_INCREMENT = 1.0f;
 
@@ -53,17 +53,17 @@ AppStatus g_app_status = RUNNING;
 ShaderProgram g_shader_program = ShaderProgram();
 
 glm::mat4 g_view_matrix,
-g_kimi_matrix,
-g_totsuko_matrix,
+g_light_matrix,
+g_misa_matrix,
 g_projection_matrix;
 
 float g_previous_ticks = 0.0f;
 
-glm::vec3 g_rotation_kimi = glm::vec3(0.0f, 0.0f, 0.0f),
-g_rotation_totsuko = glm::vec3(0.0f, 0.0f, 0.0f);
+glm::vec3 g_rotation_light = glm::vec3(0.0f, 0.0f, 0.0f),
+g_rotation_misa = glm::vec3(0.0f, 0.0f, 0.0f);
 
-GLuint g_kimi_texture_id,
-g_totsuko_texture_id;
+GLuint g_light_texture_id,
+g_misa_texture_id;
 
 
 GLuint load_texture(const char* filepath)
@@ -123,8 +123,8 @@ void initialise()
 
     g_shader_program.load(V_SHADER_PATH, F_SHADER_PATH);
 
-    g_kimi_matrix = glm::mat4(1.0f);
-    g_totsuko_matrix = glm::mat4(1.0f);
+    g_light_matrix = glm::mat4(1.0f);
+    g_misa_matrix = glm::mat4(1.0f);
     g_view_matrix = glm::mat4(1.0f);
     g_projection_matrix = glm::ortho(-5.0f, 5.0f, -3.75f, 3.75f, -1.0f, 1.0f);
 
@@ -135,8 +135,8 @@ void initialise()
 
     glClearColor(BG_RED, BG_BLUE, BG_GREEN, BG_OPACITY);
 
-    g_kimi_texture_id = load_texture(KIMI_SPRITE_FILEPATH);
-    g_totsuko_texture_id = load_texture(TOTSUKO_SPRITE_FILEPATH);
+    g_light_texture_id = load_texture(LIGHT_SPRITE_FILEPATH);
+    g_misa_texture_id = load_texture(MISA_SPRITE_FILEPATH);
 
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -164,25 +164,27 @@ void update()
     g_previous_ticks = ticks; 
 
     /* Game logic */
-    g_rotation_kimi.y += ROT_INCREMENT * delta_time;
-    g_rotation_totsuko.y += -1 * ROT_INCREMENT * delta_time;
+    g_rotation_light.y += ROT_INCREMENT * delta_time;
+    g_rotation_misa.y += -1 * ROT_INCREMENT * delta_time;
 
     /* Model matrix reset */
-    g_kimi_matrix = glm::mat4(1.0f);
-    g_totsuko_matrix = glm::mat4(1.0f);
+    g_light_matrix = glm::mat4(1.0f);
+    g_misa_matrix = glm::mat4(1.0f);
 
     /* Transformations */
-    g_kimi_matrix = glm::translate(g_kimi_matrix, INIT_POS_KIMI);
-    g_kimi_matrix = glm::rotate(g_kimi_matrix,
-        g_rotation_kimi.y,
+    g_light_matrix = glm::translate(g_light_matrix, INIT_POS_LIGHT);
+    g_light_matrix = glm::rotate(g_light_matrix,
+        g_rotation_light.y,
         glm::vec3(0.0f, 1.0f, 0.0f));
-    g_kimi_matrix = glm::scale(g_kimi_matrix, INIT_SCALE);
+    g_light_matrix = glm::scale(g_light_matrix, INIT_SCALE);
 
-    g_totsuko_matrix = glm::translate(g_totsuko_matrix, INIT_POS_TOTSUKO);
-    g_totsuko_matrix = glm::rotate(g_totsuko_matrix,
-        g_rotation_totsuko.y,
+    g_misa_matrix = glm::translate(g_misa_matrix, INIT_POS_MISA);
+    g_misa_matrix = glm::rotate(g_misa_matrix,
+        g_rotation_misa.y,
         glm::vec3(0.0f, 1.0f, 0.0f));
-    g_totsuko_matrix = glm::scale(g_totsuko_matrix, INIT_SCALE);
+    g_misa_matrix = glm::scale(g_misa_matrix, INIT_SCALE);
+
+    //g_light_matrix = glm::translate(g_light_matrix, glm::vec3(0.001f, 0.0f, 0.0f));
 }
 
 
@@ -221,8 +223,8 @@ void render()
     glEnableVertexAttribArray(g_shader_program.get_tex_coordinate_attribute());
 
     // Bind texture
-    draw_object(g_kimi_matrix, g_kimi_texture_id);
-    draw_object(g_totsuko_matrix, g_totsuko_texture_id);
+    draw_object(g_light_matrix, g_light_texture_id);
+    draw_object(g_misa_matrix, g_misa_texture_id);
 
     // We disable two attribute arrays now
     glDisableVertexAttribArray(g_shader_program.get_position_attribute());
